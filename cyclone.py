@@ -142,7 +142,15 @@ with col1:
 # 주요 파라미터 계산
 A_in = a * b  # 단일 사이클론 입구 단면적
 Q_single = V_in * A_in  # 단일 사이클론 유량
-n_cyclones = max(1, int(np.ceil(Q_total / Q_single)))  # 필요한 사이클론 수 자동 계산 (최소 1개)
+
+# 필요한 사이클론 수 계산 (최대 2개로 제한)
+required_cyclones = int(np.ceil(Q_total / Q_single))
+n_cyclones = min(required_cyclones, 2)  # 최대 2개로 제한
+
+# 처리량이 단일 사이클론 최대 처리량의 2배를 초과하는 경우 경고
+if required_cyclones > 2:
+    st.warning(f"⚠️ 현재 처리량({Q_total:.1f} m³/s)은 2개의 사이클론으로 처리하기에 부족합니다. "
+              f"필요한 사이클론 수: {required_cyclones}개")
 
 # 유효 회전수 Ne 계산 (이미지 공식 적용: Ne = 1/b * [H + h/2])
 # H는 원통부 높이, h는 원추부 높이, b는 입구 높이
@@ -253,12 +261,24 @@ with col2:
     
     with result_col1:
         st.subheader("성능 지표")  # 성능 지표
-        st.markdown(f"- Cut-size Diameter (dp₅₀): **{dp50:.2f} μm**")  # Cut-size 직경
-        st.markdown(f"- 단일 사이클론 효율 ({dp_target} μm): **{calculate_efficiency(dp_target):.2%}**")  # 단일 사이클론 효율 (단일 값으로 재계산)
-        st.markdown(f"- 멀티사이클론 누적 효율 ({dp_target} μm): **{(1 - (1 - calculate_efficiency(dp_target))**n_cyclones):.2%}**")  # 멀티사이클론 누적 효율 (단일 값으로 재계산)
-        st.markdown(f"- 예상 압력 손실: **{calculate_pressure_loss(model_type, rho_g, V_in):.1f} Pa**")  # 예상 압력 손실
-        st.markdown(f"- 총 처리 유량: **{Q_total:.2f} m³/s**")  # 총 처리 유량
-        st.markdown(f"- 필요 사이클론 수: **{n_cyclones}**")  # 필요 사이클론 수
+        # Cut-size 직경 (dp50)
+        st.markdown(f"- Cut-size 직경 (dp₅₀): **{dp50:.2f} μm**")
+        
+        # 단일 사이클론 효율 (목표 입자 크기 기준)
+        eta_single = calculate_efficiency(dp_target)
+        st.markdown(f"- 단일 사이클론 효율 ({dp_target} μm): **{eta_single:.1%}**")
+        
+        # 멀티사이클론 누적 효율 (목표 입자 크기 기준)
+        eta_multi = 1 - (1 - eta_single)**n_cyclones
+        st.markdown(f"- 멀티사이클론 누적 효율 ({dp_target} μm): **{eta_multi:.1%}**")
+        
+        # 압력 손실
+        pressure_loss = calculate_pressure_loss(model_type, rho_g, V_in)
+        st.markdown(f"- 예상 압력 손실: **{pressure_loss:.0f} Pa**")
+        
+        # 처리 유량 및 사이클론 수
+        st.markdown(f"- 총 처리 유량: **{Q_total:.1f} m³/s**")
+        st.markdown(f"- 필요 사이클론 수: **{n_cyclones}개**")
     
     with result_col2:
         st.subheader("주요 설계 비율")  # 주요 설계 비율
@@ -281,6 +301,7 @@ with col2:
     
 st.subheader("📊 입자 크기별 및 전체 집진 효율")  # 입자 크기별 및 전체 집진 효율
 
+# 입자 크기별 효율 계산 및 표시
 efficiency_results = []
 overall_single_efficiency = 0.0  # 누적 효율 (0~1 범위 소수)
 
@@ -291,38 +312,48 @@ for item in particle_distribution_data:
 
     # 단일 사이클론 효율 계산
     eta_single_dp = calculate_efficiency(dp_avg)
+    
+    # 멀티사이클론 효율 계산
+    eta_multi_dp = 1 - (1 - eta_single_dp)**n_cyclones
 
     # Cut-size 대비 입자 크기 비율
     dpc_dp = dp50 / dp_avg if dp_avg > 0 else float('inf')
 
-    # Nj 계산: Nj = 1/(1+(dpc/dp)^2)
-    Nj = 1 / (1 + dpc_dp**2) if not np.isinf(dpc_dp) else 0
-
     # % collected 계산 (소수 값)
-    collected_single_percent = Nj * (Mj_percent / 100)
+    collected_single_percent = eta_single_dp * (Mj_percent / 100)
+    collected_multi_percent = eta_multi_dp * (Mj_percent / 100)
+    
     overall_single_efficiency += collected_single_percent  # 누적 효율은 소수 상태로 유지
 
-    # 표에 출력용 데이터 저장 (소수→퍼센트 변환 포함)
+    # 표에 출력용 데이터 저장
     efficiency_results.append({
-        "size range": size_range,
-        "dp avg": dp_avg,
-        "dpc/dp": f"{dpc_dp:.4f}",
-        "Nj": f"{Nj:.6f}",
-        "Mj%": Mj_percent,
-        "% collected": f"{collected_single_percent * 100:.6f}"
+        "입자 크기 범위": size_range,
+        "평균 입자 크기 (μm)": dp_avg,
+        "단일 사이클론 효율": f"{eta_single_dp:.1%}",
+        "멀티사이클론 효율": f"{eta_multi_dp:.1%}",
+        "입자 분포 (%)": Mj_percent,
+        "단일 수집률 (%)": f"{collected_single_percent * 100:.1f}",
+        "멀티 수집률 (%)": f"{collected_multi_percent * 100:.1f}"
     })
 
 # 데이터프레임 정리 및 출력
 efficiency_df = pd.DataFrame(efficiency_results)
-efficiency_df = efficiency_df[["size range", "dp avg", "dpc/dp", "Nj", "Mj%", "% collected"]]
+efficiency_df = efficiency_df[["입자 크기 범위", "평균 입자 크기 (μm)", "단일 사이클론 효율", 
+                             "멀티사이클론 효율", "입자 분포 (%)", "단일 수집률 (%)", "멀티 수집률 (%)"]]
 st.dataframe(efficiency_df, hide_index=True)
 
-# 단일 사이클론 전체 효율 출력 (소수 → 퍼센트)
-st.markdown(f"**Overall Effic =** **{overall_single_efficiency * 100:.2f}%**")
+# 전체 효율 계산 및 표시
+overall_multi_efficiency = (1 - (1 - overall_single_efficiency)**n_cyclones) * 100
 
-# 멀티사이클론 전체 효율 계산
-overall_multi_efficiency_image = (1 - (1 - overall_single_efficiency) ** 2) * 100
-st.markdown(f"**멀티 효율 =** **{overall_multi_efficiency_image:.6f}%**")
+# 효율 요약 표시
+col1, col2 = st.columns(2)
+with col1:
+    st.metric("단일 사이클론 전체 효율", f"{overall_single_efficiency * 100:.1f}%")
+with col2:
+    if n_cyclones == 2:
+        st.metric("이중 사이클론 전체 효율", f"{overall_multi_efficiency:.1f}%")
+    else:
+        st.metric("단일 사이클론 전체 효율", f"{overall_single_efficiency * 100:.1f}%")
 
 # ⚠️ 100% 초과 시 경고
 if overall_single_efficiency > 1.0:
