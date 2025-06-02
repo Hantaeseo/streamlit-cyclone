@@ -68,28 +68,28 @@ with col1:
     # 주요 치수 탭
     with tabs[0]:
         # 단일 사이클론 직경 (D)
-        D = st.number_input("단일 사이클론 직경 D (m)", value=0.04, min_value=0.01, max_value=0.5, step=0.001,
+        D = st.number_input("단일 사이클론 직경 D (m)", value=0.04, min_value=0.01, max_value=5.0, step=0.001,
                           help="시멘트 소성로 적용 시 권장 ≤ 0.15m")
         # 입구 너비 (a)
-        a = st.number_input("입구 너비 a (m)", value=0.02, min_value=0.005, max_value=0.2, step=0.001,
+        a = st.number_input("입구 너비 a (m)", value=0.02, min_value=0.005, max_value=5.0, step=0.001,
                           help="시멘트 먼지 특성 고려")
         # 입구 높이 (b)
-        b = st.number_input("입구 높이 b (m)", value=0.04, min_value=0.01, max_value=0.3, step=0.001,
+        b = st.number_input("입구 높이 b (m)", value=0.04, min_value=0.01, max_value=5.0, step=0.001,
                           help="시멘트 먼지 특성 고려")
         # 원통부 높이 (H)
-        H = st.number_input("원통부 높이 H (m)", value=0.16, min_value=0.05, max_value=1.0, step=0.005,
+        H = st.number_input("원통부 높이 H (m)", value=0.16, min_value=0.05, max_value=5.0, step=0.005,
                           help="시멘트 먼지 분리 효율 고려")
         # 원추부 높이 (h)
-        h = st.number_input("원추부 높이 h (m)", value=0.16, min_value=0.05, max_value=1.0, step=0.005,
+        h = st.number_input("원추부 높이 h (m)", value=0.16, min_value=0.05, max_value=5.0, step=0.005,
                           help="시멘트 먼지 수집 효율 고려")
         # 배출구 직경 (B)
-        B = st.number_input("먼지 배출구 직경 B (m)", value=0.02, min_value=0.005, max_value=0.1, step=0.001,
+        B = st.number_input("먼지 배출구 직경 B (m)", value=0.02, min_value=0.005, max_value=5.0, step=0.001,
                           help="시멘트 먼지 배출 특성 고려")
         # 찾아관 침입 깊이 (S)
-        S = st.number_input("찾아관 침입 깊이 S (m)", value=0.05, min_value=0.0, max_value=0.3, step=0.001,
+        S = st.number_input("찾아관 침입 깊이 S (m)", value=0.05, min_value=0.0, max_value=5.0, step=0.001,
                           help="시멘트 먼지 재비산 방지")
         # 찾아관 직경 (De)
-        De = st.number_input("찾아관 직경 De (m)", value=0.02, min_value=0.01, max_value=0.2, step=0.001,
+        De = st.number_input("찾아관 직경 De (m)", value=0.02, min_value=0.01, max_value=5.0, step=0.001,
                           help="시멘트 먼지 재비산 방지")
     
     # 유체/입자 탭
