@@ -4,3 +4,4 @@ numpy>=1.26.0
 pandas>=2.2.0
 Pillow>=10.2.0
 requests>=2.31.0 
+langchain-google-genai>=2.0.0

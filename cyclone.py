@@ -1185,3 +1185,7 @@ Lapple 이론 모델 기반 계산 결과입니다. 실제 성능은 입자 특�
 """)
 
 # 기존 대용량 섹션들 제거 또는 사이드바로 이동
+
+# ------------ Version Info ------------
+# cyclone.py - Cyclone Design Simulator v1.0.1
+# Last updated: 2025.06.04
