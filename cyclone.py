@@ -744,11 +744,12 @@ V_t = V_in  # 접선 속도 (입구 속도와 동일하다고 가정)
 standard_particle_distribution = [
     {"size_range": "1~5", "dp_avg": 2.5, "Mj_percent": 5},
     {"size_range": "5~10", "dp_avg": 7.5, "Mj_percent": 10},
-    {"size_range": "10~20", "dp_avg": 15, "Mj_percent": 15},
-    {"size_range": "20~40", "dp_avg": 30, "Mj_percent": 20},
-    {"size_range": "40~60", "dp_avg": 50, "Mj_percent": 30},
-    {"size_range": "60~80", "dp_avg": 70, "Mj_percent": 15},
-    {"size_range": "80~100", "dp_avg": 90, "Mj_percent": 5},
+    {"size_range": "10~20", "dp_avg": 15, "Mj_percent": 10},
+    {"size_range": "20~40", "dp_avg": 30, "Mj_percent": 15},
+    {"size_range": "40~60", "dp_avg": 50, "Mj_percent": 15},
+    {"size_range": "60~80", "dp_avg": 70, "Mj_percent": 20},
+    {"size_range": "80~100", "dp_avg": 90, "Mj_percent": 15},
+    {"size_range": "100+", "dp_avg": 100, "Mj_percent": 10},
 ]
 
 # 필요한 사이클론 수 계산 (최대 2개로 제한)
@@ -812,12 +813,12 @@ with col2:
     image_particle_data = [
         {"size_range": "1~5", "dp_avg": 2.5, "Mj_percent": 5},
         {"size_range": "5~10", "dp_avg": 7.5, "Mj_percent": 10},
-        {"size_range": "10~20", "dp_avg": 15, "Mj_percent": 15},
-        {"size_range": "20~40", "dp_avg": 30, "Mj_percent": 20},
-        {"size_range": "40~60", "dp_avg": 50, "Mj_percent": 30},
-        {"size_range": "60~80", "dp_avg": 70, "Mj_percent": 15},
-        {"size_range": "80~100", "dp_avg": 90, "Mj_percent": 10},
-        {"size_range": "100+", "dp_avg": 100, "Mj_percent": 5},
+        {"size_range": "10~20", "dp_avg": 15, "Mj_percent": 10},
+        {"size_range": "20~40", "dp_avg": 30, "Mj_percent": 15},
+        {"size_range": "40~60", "dp_avg": 50, "Mj_percent": 15},
+        {"size_range": "60~80", "dp_avg": 70, "Mj_percent": 20},
+        {"size_range": "80~100", "dp_avg": 90, "Mj_percent": 15},
+        {"size_range": "100+", "dp_avg": 100, "Mj_percent": 10},
     ]
     
     # 계산 결과 테이블 생성 (이미지와 동일한 형식)
