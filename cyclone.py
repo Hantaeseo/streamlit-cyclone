@@ -967,7 +967,7 @@ if preset_option == "실제 설계 사례 (625m³/min)":
     - 계산값: {cut_size_micron:.2f} μm
     - 사용자 목표값: 24.04 μm
     - 차이: {abs(cut_size_micron - 24.04):.2f} μm
-    - 정확도: {'✅ 매우 정확!' if abs(cut_size_micron - 24.04) < 0.1 else '📐 근사치' if abs(cut_size_micron - 24.04) < 0.5 else '⚠️ 차이 있음'}
+    - 정확도: {('✅ 매우 정확!' if abs(cut_size_micron - 24.04) < 0.1 else '📐 근사치' if abs(cut_size_micron - 24.04) < 0.5 else '⚠️ 차이 있음')}
     
     **정확한 치수로 계산식:**
     dpc = √[9×μ×W / (2π×Ne×Vi×(ρp-ρg))]
@@ -987,7 +987,7 @@ if preset_option == "실제 설계 사례 (625m³/min)":
     **최종 검증:**
     - dpc 오차: {abs(cut_size_micron - 24.04):.2f} μm
     - 계산 정확도: {((24.04 - abs(cut_size_micron - 24.04))/24.04*100):.1f}%
-    - 상태: {'🎯 목표 달성' if abs(cut_size_micron - 24.04) < 0.5 else '📐 미세 조정 필요' if abs(cut_size_micron - 24.04) < 1.0 else '⚠️ 파라미터 검토 필요'}
+    - 상태: {('🎯 목표 달성' if abs(cut_size_micron - 24.04) < 0.5 else '📐 미세 조정 필요' if abs(cut_size_micron - 24.04) < 1.0 else '⚠️ 파라미터 검토 필요')}
     """)
 else:
     # 다른 프리셋들의 설계 계산 정보
@@ -1228,16 +1228,19 @@ with col2:
         cyclone_config = f"직렬 {series_count}개"
         
         # 사용자 제공 정확한 치수 기준 효율 검증
+        dpc_accuracy = "✅ 매우 정확" if abs(cut_size_micron - 24.04) < 0.5 else "📐 조정 필요"
+        pressure_accuracy = "✅ 매우 정확" if abs(system_pressure_loss - 1224.465) < 5 else "📐 조정 필요"
+        
         st.sidebar.markdown(f"""
         **효율 계산 결과 (정확한 치수 기준):**
         - 현재 dpc: {cut_size_micron:.2f} μm (목표: 24.04 μm)
         - 단일 사이클론 효율: {single_cyclone_efficiency:.2f}%
         - Multi Cyclone 효율: {multi_cyclone_efficiency:.5f}%
-        - dpc 정확도: {'✅ 매우 정확' if abs(cut_size_micron - 24.04) < 0.5 else '📐 조정 필요'}
+        - dpc 정확도: {dpc_accuracy}
         
         **압력 손실 정확도:**
         - 현재 총 압력: {system_pressure_loss:.1f} Pa (목표: 1224.465 Pa)
-        - 압력 정확도: {'✅ 매우 정확' if abs(system_pressure_loss - 1224.465) < 5 else '📐 조정 필요'}
+        - 압력 정확도: {pressure_accuracy}
         
         **치수 정확도:**
         - H = {inlet_height:.3f} m, W = {inlet_width:.4f} m
